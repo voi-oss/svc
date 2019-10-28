@@ -165,7 +165,7 @@ func WithHealthz() Option {
 				}
 			}
 			if len(errs) > 0 {
-				s.logger.Warn("Ready check failed", zap.Any("errs", errs))
+				s.logger.Warn("Ready check failed", zap.Errors("errors", errs))
 				b, err := json.Marshal(map[string]interface{}{"errors": errs})
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
