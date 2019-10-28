@@ -2,16 +2,6 @@ name: CI
 on: [pull_request]
 
 jobs:
-  lint:
-    name: Linters
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v1
-        with:
-          depth: 1
-
-      - run: make lint
-
   tests:
     name: Tests
     runs-on: ubuntu-18.04
@@ -25,5 +15,3 @@ jobs:
           go-version: '1.13'
 
       - run: make test
-        env:
-          DOCKER_TOOLS: false
