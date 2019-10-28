@@ -151,7 +151,13 @@ the [code of conduct](CODE_OF_CONDUCT.md). The `svc` maintainers keep an eye on
 issues and pull requests, but you can also report any negative conduct to
 opensource@voiapp.io.
 
+### Contributors
+
+@djui
+@drpytho
+@cvik
 
 ## License
 
 Apache 2.0, see [LICENSE.md](LICENSE.md).
+
