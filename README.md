@@ -153,9 +153,14 @@ opensource@voiapp.io.
 
 ### Contributors
 
-@djui
-@drpytho
-@cvik
+- [@djui](https://github.com/djui)
+- [@drpytho](https://github.com/drpytho)
+- [@cvik](https://github.com/cvik)
+- [@K-Phoen](https://github.com/K-Phoen)
+- [@zatte](https://github.com/zatte)
+
+#### I am missing?
+If you feel you should be on this list, create a PR to add yourself. 
 
 ## License
 
