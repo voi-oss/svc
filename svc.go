@@ -3,13 +3,13 @@ package svc
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
@@ -21,7 +21,7 @@ type SVC struct {
 	Name    string
 	Version string
 
-	Router *gin.Engine
+	Router *http.ServeMux
 
 	TerminationGracePeriod time.Duration
 	signals                chan os.Signal
@@ -43,6 +43,8 @@ func New(name, version string, opts ...Option) (*SVC, error) {
 		Name:    name,
 		Version: version,
 
+		Router: http.NewServeMux(),
+
 		TerminationGracePeriod: defaultTerminationGracePeriod,
 		signals:                make(chan os.Signal, 3),
 
@@ -52,9 +54,6 @@ func New(name, version string, opts ...Option) (*SVC, error) {
 	}
 
 	if err := WithDevelopmentLogger()(s); err != nil {
-		return nil, err
-	}
-	if err := WithProductionRouter()(s); err != nil {
 		return nil, err
 	}
 
