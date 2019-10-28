@@ -14,7 +14,7 @@ func (d *dummyWorker) Terminate() error       { return nil }
 func (d *dummyWorker) Run() error             { select {} }
 
 func main() {
-	s, err := svc.New("minimal-service", "v0.0.1")
+	s, err := svc.New("minimal-service", "1.0.0")
 	svc.MustInit(s, err)
 
 	w := &dummyWorker{}
