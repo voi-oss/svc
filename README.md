@@ -3,6 +3,9 @@
 
 # SVC - Worker life-cycle manager
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/voi-go/svc?style=flat-square)](https://goreportcard.com/report/github.com/voi-go/svc)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/voi-go/svc)
+
 SVC is a framework that creates a long-running service process, managing the
 live-cycle of workers. It comes with "batteries-included" for convenience and
 uniformity across services.
