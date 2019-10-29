@@ -17,6 +17,8 @@ const (
 	defaultTerminationGracePeriod = 15 * time.Second
 )
 
+// SVC defines the worker life-cycle manager. It holds service metadata, router,
+// logger, and the workers.
 type SVC struct {
 	Name    string
 	Version string
