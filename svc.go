@@ -141,13 +141,15 @@ func (s *SVC) Shutdown() {
 }
 
 // MustInit is a convenience function to check for and halt on errors.
-func MustInit(s *SVC, err error) {
+func MustInit(s *SVC, err error) *SVC {
 	if err != nil {
 		if s == nil || s.logger == nil {
 			panic(err)
 		}
 		s.logger.Fatal("Service initialization failed", zap.Error(err), zap.Stack("stacktrace"))
+		return nil
 	}
+	return s
 }
 
 // Logger returns the service's logger. Logger might be nil if New() fails.
