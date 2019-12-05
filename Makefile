@@ -9,7 +9,7 @@ lint:
 
 .PHONY: test
 test:
-	go test -race $(PKGS)
+	go test -race $(PKGS) -coverprofile=coverage.txt -covermode=atomic
 
 .PHONY: tools
 tools:
