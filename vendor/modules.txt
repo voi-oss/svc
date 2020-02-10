@@ -1,5 +1,7 @@
 # github.com/beorn7/perks v1.0.1
 github.com/beorn7/perks/quantile
+# github.com/blendle/zapdriver v1.3.1
+github.com/blendle/zapdriver
 # github.com/caarlos0/env v3.5.0+incompatible
 github.com/caarlos0/env
 # github.com/cespare/xxhash/v2 v2.1.0
