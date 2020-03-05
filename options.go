@@ -51,7 +51,7 @@ func WithDevelopmentLogger() Option {
 			zapcore.DebugLevel,
 			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
 		)
-		logger.With(zap.String("app", s.Name), zap.String("version", s.Version))
+		logger = logger.With(zap.String("app", s.Name), zap.String("version", s.Version))
 		return assignLogger(s, logger, atom)
 	}
 }
@@ -64,7 +64,7 @@ func WithProductionLogger() Option {
 			zapcore.InfoLevel,
 			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
 		)
-		logger.With(zap.String("app", s.Name), zap.String("version", s.Version))
+		logger = logger.With(zap.String("app", s.Name), zap.String("version", s.Version))
 		return assignLogger(s, logger, atom)
 	}
 }
@@ -81,7 +81,6 @@ func WithConsoleLogger(level zapcore.Level) Option {
 			level,
 			zapcore.NewConsoleEncoder(config),
 		)
-		logger.With(zap.String("app", s.Name), zap.String("version", s.Version))
 		return assignLogger(s, logger, atom)
 	}
 }
@@ -95,7 +94,7 @@ func WithStackdriverLogger(level zapcore.Level) Option {
 			level,
 			zapcore.NewJSONEncoder(zapdriver.NewProductionEncoderConfig()),
 		)
-		logger.With(zapdriver.ServiceContext(s.Name), zapdriver.Label("version", s.Version))
+		logger = logger.With(zapdriver.ServiceContext(s.Name), zapdriver.Label("version", s.Version))
 		return assignLogger(s, logger, atom)
 	}
 }
