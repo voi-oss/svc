@@ -158,9 +158,10 @@ For more details, see the examples.
 ## Configuration
 
 ### Logging
-The default format is generic JSON. The log format can be configured by setting the `LOG_FORMAT` environment variable. The supported formats are:
-- "stackdriver"
-- "console"
+The log format can be configured by providing an `Option` on initialization. The supported formats are:
+- JSON (default)
+- Stackdriver
+- Console
 
 ## Contributions
 
