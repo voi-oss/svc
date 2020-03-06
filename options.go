@@ -7,6 +7,7 @@ import (
 	"net/http/pprof"
 	"time"
 
+	"github.com/blendle/zapdriver"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
@@ -35,11 +36,9 @@ func WithRouter(router *http.ServeMux) Option {
 	}
 }
 
-// WithProductionLogger is an option that uses a zap Logger with configurations
-// set meant to be used for production.
-func WithProductionLogger() Option {
+// WithLogger is an option that allows you to provide your own customized logger.
+func WithLogger(logger *zap.Logger, atom zap.AtomicLevel) Option {
 	return func(s *SVC) error {
-		logger, atom := newLogger(s.Name, s.Version, zapcore.InfoLevel)
 		return assignLogger(s, logger, atom)
 	}
 }
@@ -48,7 +47,52 @@ func WithProductionLogger() Option {
 // configurations set meant to be used for development.
 func WithDevelopmentLogger() Option {
 	return func(s *SVC) error {
-		logger, atom := newLogger(s.Name, s.Version, zapcore.DebugLevel)
+		logger, atom := newLogger(
+			zapcore.DebugLevel,
+			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		)
+		logger = logger.With(zap.String("app", s.Name), zap.String("version", s.Version))
+		return assignLogger(s, logger, atom)
+	}
+}
+
+// WithProductionLogger is an option that uses a zap Logger with configurations
+// set meant to be used for production.
+func WithProductionLogger() Option {
+	return func(s *SVC) error {
+		logger, atom := newLogger(
+			zapcore.InfoLevel,
+			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		)
+		logger = logger.With(zap.String("app", s.Name), zap.String("version", s.Version))
+		return assignLogger(s, logger, atom)
+	}
+}
+
+// WithConsoleLogger is an option that uses a zap Logger with configurations
+// set meant to be used for debugging in the console.
+func WithConsoleLogger(level zapcore.Level) Option {
+	return func(s *SVC) error {
+		config := zap.NewProductionEncoderConfig()
+		config.EncodeTime = zapcore.RFC3339TimeEncoder
+
+		logger, atom := newLogger(
+			level,
+			zapcore.NewConsoleEncoder(config),
+		)
+		return assignLogger(s, logger, atom)
+	}
+}
+
+// WithStackdriverLogger is an option that uses a zap Logger with configurations
+// set meant to be used for production and is compliant with the GCP/Stackdriver format.
+func WithStackdriverLogger(level zapcore.Level) Option {
+	return func(s *SVC) error {
+		logger, atom := newLogger(
+			level,
+			zapcore.NewJSONEncoder(zapdriver.NewProductionEncoderConfig()),
+		)
+		logger = logger.With(zapdriver.ServiceContext(s.Name), zapdriver.Label("version", s.Version))
 		return assignLogger(s, logger, atom)
 	}
 }

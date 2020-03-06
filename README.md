@@ -155,6 +155,17 @@ For more details, see the examples.
 
 - [minimal](./examples/minimal/main.go): `go run ./examples/minimal`
 
+## Configuration
+
+### Customization
+The framework supports customization by using the options pattern. All customization options should be defined in `options.go`
+
+### Logging
+The log format can be configured by providing an `Option` on initialization. The supported formats are:
+- JSON `WithDevelopmentLogger()` (default) or `WithProductionLogger()`
+- Stackdriver `WithStackdriverLogger()` (prefered if running in GCP)
+- Console `WithConsoleLogger()` (use when running locally)
+- Customized `WithLogger()` (bring your own format)
 
 ## Contributions
 
