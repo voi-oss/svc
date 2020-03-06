@@ -73,7 +73,6 @@ func WithProductionLogger() Option {
 // set meant to be used for debugging in the console.
 func WithConsoleLogger(level zapcore.Level) Option {
 	return func(s *SVC) error {
-
 		config := zap.NewProductionEncoderConfig()
 		config.EncodeTime = zapcore.RFC3339TimeEncoder
 
@@ -89,7 +88,6 @@ func WithConsoleLogger(level zapcore.Level) Option {
 // set meant to be used for production and is compliant with the GCP/Stackdriver format.
 func WithStackdriverLogger(level zapcore.Level) Option {
 	return func(s *SVC) error {
-
 		logger, atom := newLogger(
 			level,
 			zapcore.NewJSONEncoder(zapdriver.NewProductionEncoderConfig()),
