@@ -44,8 +44,8 @@ got a _SigInt_, _SigTerm_, or _SigHup_, (ii) an error from a running worker, or
 (iii) that all workers have finished successfully. Then it asynchronously
 terminates all initialized workers (`worker.Terminate`). Failing to terminate a
 worker only logs that error, termination of other workers continues. This phase
-has a deadline of 15s by default, thus workers should terminate as quick and
-graceful as possible.
+has a deadline of 15s by default, thus workers should terminate as quickly and
+gracefully as possible.
 
 
 ## Worker
@@ -67,14 +67,7 @@ the shutdown routine.
 3. **Run** phase (`worker.Run`): A worker should now execute a long-running
 task. When the task ends with an error, SVC immediately shuts down.
 
-4. **Termination** phase (`worker.Terminate`): A worker is asked to terminate
-within a given grace period. A wait period may also be provided to delay the
-termination of workers whilst an external system is refreshing their service
-target list. The grace period should be set as follows:
-`wait period + max in flight service request period + some buffer`. The `svc`
-grace period must always be greater than the wait period. When running in
-kubernetes the `terminationGracePeriodSeconds` must be greater than the `svc`
-grace period.
+4. **Termination** phase (`worker.Terminate`): A worker is asked to terminate within a given grace period.
 
 
 ## Controller
@@ -172,6 +165,13 @@ The log format can be configured by providing an `Option` on initialization. The
 - Stackdriver `WithStackdriverLogger()` (prefered if running in GCP)
 - Console `WithConsoleLogger()` (use when running locally)
 - Customized `WithLogger()` (bring your own format)
+
+### Service Termination
+Service termination must consider a variety of aspects. These aspects can be managed by SVC as follows:
+- A wait period can be provided to delay the termination of workers whilst an external system is refreshing their service
+target list. In the case of gRPC in Kubernetes this should be 35 seconds to cover the 30 second DNS TTL of kuberentes headless services. For example `WithTerminationWaitPeriod(35 * time.Second)`
+- A grace period can be provided to allow in flight requests to be processed by the service. This period should be the max timeout of the client making the request (excluding retries) plus the wait period. For example `WithTerminationGracePeriod(55 * time.Second)` where the wait period is 35 seconds and the grace period is 20 seconds.
+- When running in Kubernetes you should also set a `terminationGracePeriodSeconds` on your kubernetes deployment. This period should be longer than your grace period. For example `terminationGracePeriodSeconds: 60` would be a good value when your wait period is 35 seconds and your grace period is 55 seconds.
 
 ## Contributions
 
