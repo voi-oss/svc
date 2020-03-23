@@ -37,14 +37,14 @@ worker fails to initialize itself, already initialized workers get terminated
 and then entire service is shut down. Initializing a worker **should not block**
 the service and should be quick as no deadline is given. After all workers have
 been initialized, the workers get asynchronously run (`worker.Run`). Worker's
-`Run` **should block**! 
+`Run` **should block**!
 
 4. **Shutdown** phase (`svc.Shutdown`): SVC now waits until either: (i) it
 got a _SigInt_, _SigTerm_, or _SigHup_, (ii) an error from a running worker, or
 (iii) that all workers have finished successfully. Then it asynchronously
 terminates all initialized workers (`worker.Terminate`). Failing to terminate a
 worker only logs that error, termination of other workers continues. This phase
-has a deadline of 15s by default, thus workers should terminate as quick and 
+has a deadline of 15s by default, thus workers should terminate as quick and
 graceful as possible.
 
 
@@ -57,10 +57,10 @@ The life-cycle is:
 
 1. **Instantiation** phase: A worker should get instantiated and then added to
 the service via `svc.AddWorker(name, worker)`. Each worker needs to have a
-unique name. 
+unique name.
 
 2. **Initialization** phase (`worker.Init`): A worker gets initialized and
-passed a named logger that it can keep to log throughout its life-time. 
+passed a named logger that it can keep to log throughout its life-time.
 Initialization must not block. If a worker fails to get initialized, SVC starts
 the shutdown routine.
 
@@ -68,7 +68,13 @@ the shutdown routine.
 task. When the task ends with an error, SVC immediately shuts down.
 
 4. **Termination** phase (`worker.Terminate`): A worker is asked to terminate
-within a given grace period. 
+within a given grace period. A wait period may also be provided to delay the
+termination of workers whilst an external system is refreshing their service
+target list. The grace period should be set as follows:
+`wait period + max in flight service request period + some buffer`. The `svc`
+grace period must always be greater than the wait period. When running in
+kubernetes the `terminationGracePeriodSeconds` must be greater than the `svc`
+grace period.
 
 
 ## Controller
@@ -181,10 +187,11 @@ opensource@voiapp.io.
 - [@drpytho](https://github.com/drpytho)
 - [@cvik](https://github.com/cvik)
 - [@K-Phoen](https://github.com/K-Phoen)
+- [@ronanbarrett](https://github.com/ronanbarrett)
 - [@zatte](https://github.com/zatte)
 
 #### I am missing?
-If you feel you should be on this list, create a PR to add yourself. 
+If you feel you should be on this list, create a PR to add yourself.
 
 ## License
 
