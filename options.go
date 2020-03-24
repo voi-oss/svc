@@ -17,8 +17,16 @@ import (
 // Option defines SVC's option type.
 type Option func(*SVC) error
 
-// WithTerminationGracePeriod is an option that sets the termination grace
-// period.
+// WithTerminationWaitPeriod is an option that sets the termination wait period.
+func WithTerminationWaitPeriod(d time.Duration) Option {
+	return func(s *SVC) error {
+		s.TerminationWaitPeriod = d
+
+		return nil
+	}
+}
+
+// WithTerminationGracePeriod is an option that sets the termination grace period.
 func WithTerminationGracePeriod(d time.Duration) Option {
 	return func(s *SVC) error {
 		s.TerminationGracePeriod = d

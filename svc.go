@@ -15,6 +15,7 @@ import (
 
 const (
 	defaultTerminationGracePeriod = 15 * time.Second
+	defaultTerminationWaitPeriod  = 0 * time.Second
 )
 
 // SVC defines the worker life-cycle manager. It holds service metadata, router,
@@ -26,6 +27,7 @@ type SVC struct {
 	Router *http.ServeMux
 
 	TerminationGracePeriod time.Duration
+	TerminationWaitPeriod  time.Duration
 	signals                chan os.Signal
 
 	logger             *zap.Logger
@@ -48,6 +50,7 @@ func New(name, version string, opts ...Option) (*SVC, error) {
 		Router: http.NewServeMux(),
 
 		TerminationGracePeriod: defaultTerminationGracePeriod,
+		TerminationWaitPeriod:  defaultTerminationWaitPeriod,
 		signals:                make(chan os.Signal, 3),
 
 		workers:            map[string]Worker{},
@@ -165,6 +168,7 @@ func (s *SVC) terminateWorkers() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		time.Sleep(s.TerminationWaitPeriod)
 		for _, name := range s.workersInitialized {
 			defer func(name string) {
 				w := s.workers[name]
