@@ -112,21 +112,22 @@ func (s *SVC) Run() {
 
 	errs := make(chan error)
 	wg := sync.WaitGroup{}
-	for _, w := range s.workers {
+	for name, w := range s.workers {
 		wg.Add(1)
-		go func(w Worker) {
-			defer recoverWait(&wg, errs)
+		go func(name string, w Worker) {
+			defer s.recoverWait(name, &wg, errs)
 			if err := w.Run(); err != nil {
+				s.logger.Error("Run exited with error", zap.Error(err), zap.String("worker", name))
 				errs <- err
 			}
-		}(w)
+		}(name, w)
 	}
 
 	signal.Notify(s.signals, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
 	select {
 	case err := <-errs:
-		s.logger.Fatal("Worker Init/Run failure", zap.Error(err), zap.Stack("stacktrace"))
+		s.logger.Fatal("Worker Init/Run failure", zap.Error(err))
 	case sig := <-s.signals:
 		s.logger.Warn("Caught signal", zap.String("signal", sig.String()))
 	case <-waitGroupToChan(&wg):
@@ -201,10 +202,12 @@ func waitGroupToChan(wg *sync.WaitGroup) <-chan struct{} {
 	return c
 }
 
-func recoverWait(wg *sync.WaitGroup, errors chan<- error) {
+func (s *SVC) recoverWait(name string, wg *sync.WaitGroup, errors chan<- error) {
 	wg.Done()
 	if r := recover(); r != nil {
 		if err, ok := r.(error); ok {
+			s.logger.Error("recover panic", zap.String("worker", name),
+				zap.Error(err), zap.Stack("stack"))
 			errors <- err
 		} else {
 			errors <- fmt.Errorf("%v", r)
