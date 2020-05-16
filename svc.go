@@ -31,6 +31,7 @@ type SVC struct {
 	signals                chan os.Signal
 
 	logger             *zap.Logger
+	zapOpts            []zap.Option
 	stdLogger          *log.Logger
 	atom               zap.AtomicLevel
 	loggerRedirectUndo func()
