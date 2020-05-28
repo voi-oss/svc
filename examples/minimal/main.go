@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/voi-go/svc"
+	"github.com/voi-oss/svc"
 	"go.uber.org/zap"
 )
 
