@@ -17,4 +17,4 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.30.0
 )
 
-go 1.13
+go 1.14
