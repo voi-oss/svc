@@ -66,16 +66,16 @@ func WithHTTPServer(port string) Option {
 // WithMetrics is an option that exports metrics via prometheus.
 func WithMetrics() Option {
 	return func(s *SVC) error {
-		m := prometheus.NewGaugeFunc(
+		m := prometheus.NewGauge(
 			prometheus.GaugeOpts{
 				Name:        "svc_up",
 				Help:        "Is the service in this pod up.",
 				ConstLabels: prometheus.Labels{"version": s.Version, "name": s.Name},
 			},
-			func() float64 { return 1 },
 		)
+		m.Set(1)
 
-		if err := prometheus.Register(m); err != nil {
+		if err := s.internalRegister.Register(m); err != nil {
 			s.logger.Error("svc_up could not register", zap.Error(err))
 		}
 
@@ -87,7 +87,10 @@ func WithMetrics() Option {
 //Prometheus scraper.
 func WithMetricsHandler() Option {
 	return func(s *SVC) error {
-		s.Router.Handle("/metrics", promhttp.Handler())
+		s.Router.Handle("/metrics",
+			promhttp.InstrumentMetricHandler(
+				s.internalRegister, /* Register */
+				promhttp.HandlerFor(s.gatherers, promhttp.HandlerOpts{})))
 
 		return nil
 	}
