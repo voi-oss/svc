@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 )
 
@@ -39,6 +40,9 @@ type SVC struct {
 	workers            map[string]Worker
 	workersAdded       []string
 	workersInitialized []string
+
+	gatherers        prometheus.Gatherers
+	internalRegister *prometheus.Registry
 }
 
 // New instantiates a new service by parsing configuration and initializing a
@@ -63,6 +67,9 @@ func New(name, version string, opts ...Option) (*SVC, error) {
 		return nil, err
 	}
 
+	s.internalRegister = prometheus.NewRegistry()
+	s.gatherers = []prometheus.Gatherer{s.internalRegister, prometheus.DefaultGatherer}
+
 	// Apply options
 	for _, o := range opts {
 		if err := o(s); err != nil {
@@ -82,9 +89,18 @@ func (s *SVC) AddWorker(name string, w Worker) {
 	if _, ok := w.(Healther); !ok {
 		s.logger.Warn("Worker does not implement Healther interface", zap.String("worker", name))
 	}
+	if g, ok := w.(Gatherer); ok {
+		s.AddGatherer(g.Gatherer())
+	} else {
+		s.logger.Warn("Worker does not implement Gatherer interface", zap.String("worker", name))
+	}
 	// Track workers as ordered set to initialize them in order.
 	s.workersAdded = append(s.workersAdded, name)
 	s.workers[name] = w
+}
+
+func (s *SVC) AddGatherer(gatherer prometheus.Gatherer) {
+	s.gatherers = append(s.gatherers, gatherer)
 }
 
 // Run runs the service until either receiving an interrupt or a worker
