@@ -1,4 +1,4 @@
-module github.com/voi-go/svc
+module github.com/voi-oss/svc
 
 require (
 	github.com/blendle/zapdriver v1.3.1
@@ -17,4 +17,4 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.30.0
 )
 
-go 1.13
+go 1.14
