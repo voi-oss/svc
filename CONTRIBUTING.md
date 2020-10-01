@@ -40,7 +40,7 @@ official `svc` project.
 ```
 git clone git@github.com:your_github_username/svc.git
 cd svc
-git remote add upstream https://github.com/voi-go/svc.git
+git remote add upstream https://github.com/voi-oss/svc.git
 git fetch upstream
 ```
 

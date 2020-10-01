@@ -84,7 +84,7 @@ func WithMetrics() Option {
 }
 
 // WithMetricsHandler is an option that exposes Prometheus metrics for a
-//Prometheus scraper.
+// Prometheus scraper.
 func WithMetricsHandler() Option {
 	return func(s *SVC) error {
 		s.Router.Handle("/metrics",
