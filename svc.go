@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
 
@@ -43,6 +44,7 @@ type SVC struct {
 
 	gatherers        prometheus.Gatherers
 	internalRegister *prometheus.Registry
+	promHander       http.Handler
 }
 
 // New instantiates a new service by parsing configuration and initializing a
@@ -100,6 +102,7 @@ func (s *SVC) AddWorker(name string, w Worker) {
 }
 
 func (s *SVC) AddGatherer(gatherer prometheus.Gatherer) {
+	s.promHander = nil
 	s.gatherers = append(s.gatherers, gatherer)
 }
 
@@ -230,4 +233,11 @@ func (s *SVC) recoverWait(name string, wg *sync.WaitGroup, errors chan<- error) 
 			errors <- fmt.Errorf("%v", r)
 		}
 	}
+}
+
+func (s *SVC) metricsHandler(w http.ResponseWriter, r *http.Request) {
+	if s.promHander == nil {
+		s.promHander = promhttp.HandlerFor(s.gatherers, promhttp.HandlerOpts{})
+	}
+	s.promHander.ServeHTTP(w, r)
 }
