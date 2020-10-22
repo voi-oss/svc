@@ -90,7 +90,7 @@ func WithMetricsHandler() Option {
 		s.Router.Handle("/metrics",
 			promhttp.InstrumentMetricHandler(
 				s.internalRegister, /* Register */
-				promhttp.HandlerFor(s.gatherers, promhttp.HandlerOpts{})))
+				http.HandlerFunc(s.metricsHandler)))
 
 		return nil
 	}
