@@ -3,8 +3,8 @@
 
 # SVC - Worker life-cycle manager
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/voi-go/svc?style=flat-square)](https://goreportcard.com/report/github.com/voi-go/svc)
-[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/voi-go/svc)
+[![Go Report Card](https://goreportcard.com/badge/github.com/voi-oss/svc?style=flat-square)](https://goreportcard.com/report/github.com/voi-oss/svc)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/voi-oss/svc)
 [![codecov](https://codecov.io/gh/voi-oss/svc/branch/master/graph/badge.svg)](https://codecov.io/gh/voi-oss/svc)
 
 SVC is a framework that creates a long-running service process, managing the
@@ -125,7 +125,7 @@ See [net/http/pprof](https://godoc.org/net/http/pprof).
 package main
 
 import (
-	"github.com/voi-go/svc"
+	"github.com/voi-oss/svc"
 	"go.uber.org/zap"
 )
 
