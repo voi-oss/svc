@@ -24,7 +24,7 @@ This can be done easily using the [`-s`](https://github.com/git/git/blob/b2c150d
 
 The official support channels, for both users and contributors, are:
 
-- GitHub [issues](https://github.com/voi-go/svc/issues)*
+- GitHub [issues](https://github.com/voi-oss/svc/issues)*
 
 
 ## How to Contribute
@@ -90,5 +90,5 @@ We're much more likely to approve your changes if you:
 * Maintain backward compatibility.
 
 [fork]: https://github.com/uber-go/zap/fork
-[open-issue]: https://github.com/voi-go/svc/issues/new
+[open-issue]: https://github.com/voi-oss/svc/issues/new
 [commit-message]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
