@@ -1,6 +1,8 @@
 package svc
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -137,6 +139,10 @@ func (s *SVC) Run() {
 		go func(name string, w Worker) {
 			defer s.recoverWait(name, &wg, errs)
 			if err := w.Run(); err != nil {
+				if errors.Is(err, context.Canceled) {
+					s.logger.Warn("Worker context canceled", zap.String("worker", name))
+					return
+				}
 				s.logger.Error("Run exited with error", zap.Error(err), zap.String("worker", name))
 				errs <- err
 			}
