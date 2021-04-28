@@ -139,11 +139,7 @@ func (s *SVC) Run() {
 		go func(name string, w Worker) {
 			defer s.recoverWait(name, &wg, errs)
 			if err := w.Run(); err != nil {
-				if errors.Is(err, context.Canceled) {
-					s.logger.Warn("Worker context canceled", zap.String("worker", name))
-					return
-				}
-				s.logger.Error("Run exited with error", zap.Error(err), zap.String("worker", name))
+				err = fmt.Errorf("worker %s exited: %w", name, err)
 				errs <- err
 			}
 		}(name, w)
@@ -153,7 +149,10 @@ func (s *SVC) Run() {
 
 	select {
 	case err := <-errs:
-		s.logger.Fatal("Worker Init/Run failure", zap.Error(err))
+		if !errors.Is(err, context.Canceled) {
+			s.logger.Fatal("Worker Init/Run failure", zap.Error(err))
+		}
+		s.logger.Warn("Worker context canceled", zap.Error(err))
 	case sig := <-s.signals:
 		s.logger.Warn("Caught signal", zap.String("signal", sig.String()))
 	case <-waitGroupToChan(&wg):
