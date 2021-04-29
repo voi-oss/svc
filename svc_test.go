@@ -1,6 +1,8 @@
 package svc
 
 import (
+	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -85,6 +87,23 @@ func TestShutdown(t *testing.T) {
 	case <-time.After(3 * time.Second): // time is arbitrary, just "long enough"
 		require.FailNow(t, "Service has not been shut down")
 	}
+}
+
+func TestContextCanceled(t *testing.T) {
+	dummyWorker := &WorkerMock{
+		InitFunc: func(*zap.Logger) error { return nil },
+		RunFunc: func() error {
+			return fmt.Errorf("stopped: %w", context.Canceled)
+		},
+		TerminateFunc: func() error { return nil },
+	}
+
+	s, err := New("dummy-service", "v0.0.1")
+	require.NoError(t, err)
+	s.AddWorker("dummy-worker", dummyWorker)
+
+	// Run should not log fatal
+	s.Run()
 }
 
 var _ Worker = (*WorkerMock)(nil)
