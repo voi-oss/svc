@@ -64,8 +64,9 @@ func WithLogger(logger *zap.Logger, atom zap.AtomicLevel) Option {
 
 // WithDevelopmentLogger is an option that uses a zap Logger with
 // configurations set meant to be used for development.
-func WithDevelopmentLogger() Option {
+func WithDevelopmentLogger(opts ...zap.Option) Option {
 	return func(s *SVC) error {
+		s.zapOpts = append(s.zapOpts, opts...)
 		logger, atom := s.newLogger(
 			zapcore.DebugLevel,
 			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
@@ -77,8 +78,9 @@ func WithDevelopmentLogger() Option {
 
 // WithProductionLogger is an option that uses a zap Logger with configurations
 // set meant to be used for production.
-func WithProductionLogger() Option {
+func WithProductionLogger(opts ...zap.Option) Option {
 	return func(s *SVC) error {
+		s.zapOpts = append(s.zapOpts, opts...)
 		logger, atom := s.newLogger(
 			zapcore.InfoLevel,
 			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
@@ -90,10 +92,11 @@ func WithProductionLogger() Option {
 
 // WithConsoleLogger is an option that uses a zap Logger with configurations
 // set meant to be used for debugging in the console.
-func WithConsoleLogger(level zapcore.Level) Option {
+func WithConsoleLogger(level zapcore.Level, opts ...zap.Option) Option {
 	return func(s *SVC) error {
 		config := zap.NewProductionEncoderConfig()
 		config.EncodeTime = zapcore.RFC3339TimeEncoder
+		s.zapOpts = append(s.zapOpts, opts...)
 
 		logger, atom := s.newLogger(
 			level,
@@ -105,8 +108,9 @@ func WithConsoleLogger(level zapcore.Level) Option {
 
 // WithStackdriverLogger is an option that uses a zap Logger with configurations
 // set meant to be used for production and is compliant with the GCP/Stackdriver format.
-func WithStackdriverLogger(level zapcore.Level) Option {
+func WithStackdriverLogger(level zapcore.Level, opts ...zap.Option) Option {
 	return func(s *SVC) error {
+		s.zapOpts = append(s.zapOpts, opts...)
 		logger, atom := s.newLogger(
 			level,
 			zapcore.NewJSONEncoder(zapdriver.NewProductionEncoderConfig()),
