@@ -14,14 +14,14 @@ func (s *SVC) newLogger(level zapcore.Level, encoder zapcore.Encoder) (*zap.Logg
 	atom := zap.NewAtomicLevel()
 	atom.SetLevel(level)
 
-	zapOpts := append(s.zapOpts, zap.ErrorOutput(zapcore.Lock(os.Stderr)), zap.AddCaller())
+	s.zapOpts = append(s.zapOpts, zap.ErrorOutput(zapcore.Lock(os.Stderr)), zap.AddCaller())
 
 	logger := zap.New(zapcore.NewSamplerWithOptions(zapcore.NewCore(
 		encoder,
 		zapcore.Lock(os.Stdout),
 		atom,
 	), time.Second, 100, 10),
-		zapOpts...,
+		s.zapOpts...,
 	)
 
 	return logger, atom
