@@ -2,7 +2,7 @@ package svc
 
 import (
 	"github.com/caarlos0/env"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/go-playground/validator/v10"
 )
 
 // LoadFromEnv parses environment variables into a given struct and validates
