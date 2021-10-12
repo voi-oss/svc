@@ -1,7 +1,9 @@
 package svc
 
 import (
-	"github.com/caarlos0/env"
+	"reflect"
+
+	"github.com/caarlos0/env/v6"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -9,6 +11,17 @@ import (
 // its fields' values.
 func LoadFromEnv(config interface{}) error {
 	if err := env.Parse(config); err != nil {
+		return err
+	}
+	if err := validator.New().Struct(config); err != nil {
+		return err
+	}
+	return nil
+}
+
+// LoadFromEnvWithParsers works the same as LoadFromEnv but allows for custom type parsers
+func LoadFromEnvWithParsers(config interface{}, parsers map[reflect.Type]env.ParserFunc) error {
+	if err := env.ParseWithFuncs(config, parsers); err != nil {
 		return err
 	}
 	if err := validator.New().Struct(config); err != nil {
