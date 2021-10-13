@@ -7,8 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// LoadFromEnv parses environment variables into a given struct and validates
-// its fields' values.
+// LoadFromEnv is a shortcut for LoadFromEnvWithParsers with empty custom parsers
 func LoadFromEnv(config interface{}) error {
 	return LoadFromEnvWithParsers(config, nil)
 }
