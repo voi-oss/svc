@@ -1,14 +1,21 @@
 package svc
 
 import (
-	"github.com/caarlos0/env"
+	"reflect"
+
+	"github.com/caarlos0/env/v6"
 	"github.com/go-playground/validator/v10"
 )
 
-// LoadFromEnv parses environment variables into a given struct and validates
-// its fields' values.
+// LoadFromEnv is a shortcut for LoadFromEnvWithParsers with empty custom parsers
 func LoadFromEnv(config interface{}) error {
-	if err := env.Parse(config); err != nil {
+	return LoadFromEnvWithParsers(config, nil)
+}
+
+// LoadFromEnvWithParsers parses environment variables into a given struct and validates
+// its fields' values, also allows for custom type parsers
+func LoadFromEnvWithParsers(config interface{}, parsers map[reflect.Type]env.ParserFunc) error {
+	if err := env.ParseWithFuncs(config, parsers); err != nil {
 		return err
 	}
 	if err := validator.New().Struct(config); err != nil {
