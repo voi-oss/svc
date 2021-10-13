@@ -11,17 +11,24 @@ import (
 )
 
 func TestLoadFromEnv(t *testing.T) {
+	err := LoadFromEnv(map[string]string{})
+	require.Error(t, err)
+	require.Equal(t, env.ErrNotAStructPtr, err)
+
 	test := struct {
-		StrVal string `env:"strVal"`
-		IntVal int    `env:"intVal"`
+		StrVal           string `env:"strVal"`
+		IntVal           int    `env:"intVal"`
+		EmptyRequiredVal string `env:"emptyVal" validate:"required"`
 	}{}
 
-	err := os.Setenv("strVal", "testStrVal")
+	err = os.Setenv("strVal", "testStrVal")
 	require.NoError(t, err)
 	err = os.Setenv("intVal", "123")
 	require.NoError(t, err)
+
 	err = LoadFromEnv(&test)
-	require.NoError(t, err)
+	require.Error(t, err)
+	require.Equal(t, "Key: 'EmptyRequiredVal' Error:Field validation for 'EmptyRequiredVal' failed on the 'required' tag", err.Error())
 	require.Equal(t, "testStrVal", test.StrVal)
 	require.Equal(t, 123, test.IntVal)
 }
