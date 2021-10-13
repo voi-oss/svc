@@ -10,16 +10,11 @@ import (
 // LoadFromEnv parses environment variables into a given struct and validates
 // its fields' values.
 func LoadFromEnv(config interface{}) error {
-	if err := env.Parse(config); err != nil {
-		return err
-	}
-	if err := validator.New().Struct(config); err != nil {
-		return err
-	}
-	return nil
+	return LoadFromEnvWithParsers(config, nil)
 }
 
-// LoadFromEnvWithParsers works the same as LoadFromEnv but allows for custom type parsers
+// LoadFromEnvWithParsers parses environment variables into a given struct and validates
+// its fields' values, also allows for custom type parsers
 func LoadFromEnvWithParsers(config interface{}, parsers map[reflect.Type]env.ParserFunc) error {
 	if err := env.ParseWithFuncs(config, parsers); err != nil {
 		return err
