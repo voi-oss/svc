@@ -108,6 +108,8 @@ See [Prometheus' http handler](https://godoc.org/github.com/prometheus/client_go
 `PUT /loglevel` sets a new log level. This can be useful to temporarily change
 the service's log level to `debug` to allow for better troubleshooting.
 
+This option must be passed after other options that manipulate the logger to have any effect on that logger option.
+
 See [Zap's http_handler.go](https://github.com/uber-go/zap/blob/master/http_handler.go).
 
 
