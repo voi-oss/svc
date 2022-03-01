@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// nolint: dupl
 func TestAlive(t *testing.T) {
 
 	tests := []struct {
@@ -66,6 +67,7 @@ func TestAlive(t *testing.T) {
 	}
 }
 
+// nolint: dupl
 func TestHealthy(t *testing.T) {
 
 	tests := []struct {

@@ -113,7 +113,7 @@ type WorkerMock struct {
 	RunFunc       func() error
 	TerminateFunc func() error
 	AliveFunc     func() error
-	HealthyFunc     func() error
+	HealthyFunc   func() error
 }
 
 func (w *WorkerMock) Init(l *zap.Logger) error {
