@@ -93,6 +93,9 @@ func (s *SVC) AddWorker(name string, w Worker) {
 	if _, ok := w.(Healther); !ok {
 		s.logger.Warn("Worker does not implement Healther interface", zap.String("worker", name))
 	}
+	if _, ok := w.(Aliver); !ok {
+		s.logger.Warn("Worker does not implement Aliver interface", zap.String("worker", name))
+	}
 	if g, ok := w.(Gatherer); ok {
 		s.AddGatherer(g.Gatherer())
 	} else {

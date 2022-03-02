@@ -112,6 +112,8 @@ type WorkerMock struct {
 	InitFunc      func(*zap.Logger) error
 	RunFunc       func() error
 	TerminateFunc func() error
+	AliveFunc     func() error
+	HealthyFunc   func() error
 }
 
 func (w *WorkerMock) Init(l *zap.Logger) error {
@@ -132,4 +134,18 @@ func (w *WorkerMock) Terminate() error {
 		panic("WorkerMock: Terminate was called but TerminateFunc was not mocked!")
 	}
 	return w.TerminateFunc()
+}
+
+func (w *WorkerMock) Alive() error {
+	if w.AliveFunc == nil {
+		panic("WorkerMock: Alive was called but AliveFunc was not mocked!")
+	}
+	return w.AliveFunc()
+}
+
+func (w *WorkerMock) Healthy() error {
+	if w.HealthyFunc == nil {
+		panic("WorkerMock: Healthy was called but HealthyFunc was not mocked!")
+	}
+	return w.HealthyFunc()
 }

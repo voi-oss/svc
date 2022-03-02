@@ -125,8 +125,29 @@ func WithHealthz() Option {
 	return func(s *SVC) error {
 		// Register live probe handler
 		s.Router.HandleFunc("/live", func(w http.ResponseWriter, r *http.Request) {
+			var errs []error
+			for n, w := range s.workers {
+				if hw, ok := w.(Aliver); ok {
+					if err := hw.Alive(); err != nil {
+						errs = append(errs, fmt.Errorf("worker %s: %s", n, err))
+					}
+				}
+			}
+			if len(errs) == 0 {
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = w.Write([]byte(`{"status": "Still Alive!"}`))
+				return
+			}
+
+			s.logger.Warn("liveliness probe failed", zap.Errors("errors", errs))
+			b, err := json.Marshal(map[string]interface{}{"errors": errs})
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write([]byte(`{"status": "Still Alive!"}`))
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write(b)
 		})
 
 		// Register ready probe handler
