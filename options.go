@@ -145,8 +145,8 @@ func WithHealthz() Option {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.WriteHeader(http.StatusServiceUnavailable)
 			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusServiceUnavailable)
 			_, _ = w.Write(b)
 		})
 
