@@ -28,7 +28,7 @@ func TestAlive(t *testing.T) {
 		{
 			name: "should return status not available when an error",
 
-			givenError: fmt.Errorf("internal error, restart container"),
+			givenError: fmt.Errorf("internal error, stop taking traffic until ready again"),
 
 			expectedCode: 503,
 		},
