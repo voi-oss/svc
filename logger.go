@@ -20,7 +20,7 @@ func (s *SVC) newLogger(level zapcore.Level, encoder zapcore.Encoder) (*zap.Logg
 		encoder,
 		zapcore.Lock(os.Stdout),
 		atom,
-	), time.Second, 100, 10),
+	), time.Second, 10, 10),
 		s.zapOpts...,
 	)
 
