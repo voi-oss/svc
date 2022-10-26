@@ -91,15 +91,15 @@ func (s *SVC) AddWorker(name string, w Worker) {
 		s.logger.Fatal("Duplicate worker names!", zap.String("name", name), zap.Stack("stacktrace"))
 	}
 	if _, ok := w.(Healther); !ok {
-		s.logger.Warn("Worker does not implement Healther interface", zap.String("worker", name))
+		s.logger.Info("Worker does not implement Healther interface", zap.String("worker", name))
 	}
 	if _, ok := w.(Aliver); !ok {
-		s.logger.Warn("Worker does not implement Aliver interface", zap.String("worker", name))
+		s.logger.Info("Worker does not implement Aliver interface", zap.String("worker", name))
 	}
 	if g, ok := w.(Gatherer); ok {
 		s.AddGatherer(g.Gatherer())
 	} else {
-		s.logger.Warn("Worker does not implement Gatherer interface", zap.String("worker", name))
+		s.logger.Info("Worker does not implement Gatherer interface", zap.String("worker", name))
 	}
 	// Track workers as ordered set to initialize them in order.
 	s.workersAdded = append(s.workersAdded, name)
