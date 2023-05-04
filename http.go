@@ -22,6 +22,7 @@ func newHTTPServer(port string, handler http.Handler, logger *log.Logger) *httpS
 	addr := net.JoinHostPort("", port)
 	return &httpServer{
 		addr: addr,
+		//nolint:gosec
 		httpServer: &http.Server{
 			Addr:     addr,
 			Handler:  handler,
