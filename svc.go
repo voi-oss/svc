@@ -64,9 +64,10 @@ func New(name, version string, opts ...Option) (*SVC, error) {
 		TerminationWaitPeriod:  defaultTerminationWaitPeriod,
 		signals:                make(chan os.Signal, 3),
 
-		workers:            map[string]Worker{},
-		workersAdded:       []string{},
-		workersInitialized: []string{},
+		workers:             map[string]Worker{},
+		workersAdded:        []string{},
+		workersInitialized:  []string{},
+		workerInitRetryOpts: map[string][]retry.Option{},
 	}
 
 	if err := WithDevelopmentLogger()(s); err != nil {

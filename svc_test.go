@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/avast/retry-go/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -148,4 +149,55 @@ func (w *WorkerMock) Healthy() error {
 		panic("WorkerMock: Healthy was called but HealthyFunc was not mocked!")
 	}
 	return w.HealthyFunc()
+}
+
+func TestSVC_AddWorkerWithInitRetry(t *testing.T) {
+	var attempts uint
+	tests := []struct {
+		name             string
+		w                Worker
+		retryOpts        []retry.Option
+		expectedAttempts uint
+	}{
+		{
+			name: "succeeds after 3 attempts, with max  10 attempts",
+			w: &WorkerMock{
+				InitFunc: func(*zap.Logger) error {
+					if attempts < 3 {
+						attempts++
+						return fmt.Errorf("failed")
+					}
+					return nil
+				},
+				TerminateFunc: func() error { return nil },
+				RunFunc:       func() error { return nil },
+			},
+			retryOpts:        []retry.Option{retry.Attempts(10), retry.MaxDelay(1 * time.Millisecond), retry.Delay(1 * time.Millisecond)},
+			expectedAttempts: 3,
+		},
+		{
+			name: "fails after 3 attempts, with max 3 attempts",
+			w: &WorkerMock{
+				InitFunc: func(*zap.Logger) error {
+					attempts++
+					return fmt.Errorf("failed")
+				},
+				TerminateFunc: func() error { return nil },
+				RunFunc:       func() error { return nil },
+			},
+			retryOpts:        []retry.Option{retry.Attempts(3), retry.MaxDelay(1 * time.Millisecond), retry.Delay(1 * time.Millisecond)},
+			expectedAttempts: 3,
+		},
+	}
+	for _, tt := range tests {
+		attempts = 0
+		t.Run(tt.name, func(t *testing.T) {
+			s, err := New("dummy-name", "dummy-version")
+			require.NoError(t, err)
+
+			s.AddWorkerWithInitRetry("test", tt.w, tt.retryOpts)
+			s.Run()
+			require.Equal(t, tt.expectedAttempts, attempts)
+		})
+	}
 }
