@@ -108,8 +108,8 @@ func (s *SVC) AddWorker(name string, w Worker) {
 	s.workers[name] = w
 }
 
-// AddWorker adds a named worker to the service. Added workers order is
-// maintained.
+// AddWorkerWithInitRetry adds a named worker to the service.
+// If the worker-initialization fails, it will be retried according to specified options.
 func (s *SVC) AddWorkerWithInitRetry(name string, w Worker, retryOpts []retry.Option) {
 	s.AddWorker(name, w)
 	s.workerInitRetryOpts[name] = retryOpts
