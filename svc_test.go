@@ -191,6 +191,7 @@ func TestSVC_AddWorkerWithInitRetry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		attempts = 0
+		tt := tt // not needed because we don't run tests in parallel, but scopelint complains otherwise.
 		t.Run(tt.name, func(t *testing.T) {
 			s, err := New("dummy-name", "dummy-version")
 			require.NoError(t, err)
