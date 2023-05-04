@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/avast/retry-go/v4"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
@@ -40,9 +41,10 @@ type SVC struct {
 	atom               zap.AtomicLevel
 	loggerRedirectUndo func()
 
-	workers            map[string]Worker
-	workersAdded       []string
-	workersInitialized []string
+	workers             map[string]Worker
+	workerInitRetryOpts map[string][]retry.Option
+	workersAdded        []string
+	workersInitialized  []string
 
 	gatherers        prometheus.Gatherers
 	internalRegister *prometheus.Registry
@@ -106,6 +108,13 @@ func (s *SVC) AddWorker(name string, w Worker) {
 	s.workers[name] = w
 }
 
+// AddWorker adds a named worker to the service. Added workers order is
+// maintained.
+func (s *SVC) AddWorkerWithInitRetry(name string, w Worker, retryOpts []retry.Option) {
+	s.AddWorker(name, w)
+	s.workerInitRetryOpts[name] = retryOpts
+}
+
 func (s *SVC) AddGatherer(gatherer prometheus.Gatherer) {
 	s.promHander = nil
 	s.gatherers = append(s.gatherers, gatherer)
@@ -128,7 +137,14 @@ func (s *SVC) Run() {
 	for _, name := range s.workersAdded {
 		s.logger.Debug("Initializing worker", zap.String("worker", name))
 		w := s.workers[name]
-		if err := w.Init(s.logger.Named(name)); err != nil {
+		var err error
+		if opts, ok := s.workerInitRetryOpts[name]; ok {
+			//nolint:scopelint
+			err = retry.Do(func() error { return w.Init(s.logger.Named(name)) }, opts...)
+		} else {
+			err = w.Init(s.logger.Named(name))
+		}
+		if err != nil {
 			s.logger.Error("Could not initialize service", zap.String("worker", name), zap.Error(err))
 			return
 		}
