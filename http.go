@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -23,9 +24,10 @@ func newHTTPServer(port string, handler http.Handler, logger *log.Logger) *httpS
 	return &httpServer{
 		addr: addr,
 		httpServer: &http.Server{
-			Addr:     addr,
-			Handler:  handler,
-			ErrorLog: logger,
+			Addr:              addr,
+			Handler:           handler,
+			ErrorLog:          logger,
+			ReadHeaderTimeout: 5 * time.Second, // https://medium.com/a-journey-with-go/go-understand-and-mitigate-slowloris-attack-711c1b1403f6
 		},
 	}
 }
