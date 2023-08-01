@@ -48,7 +48,7 @@ type SVC struct {
 
 	gatherers        prometheus.Gatherers
 	internalRegister *prometheus.Registry
-	promHander       http.Handler
+	promHandler      http.Handler
 }
 
 // New instantiates a new service by parsing configuration and initializing a
@@ -117,7 +117,7 @@ func (s *SVC) AddWorkerWithInitRetry(name string, w Worker, retryOpts []retry.Op
 }
 
 func (s *SVC) AddGatherer(gatherer prometheus.Gatherer) {
-	s.promHander = nil
+	s.promHandler = nil
 	s.gatherers = append(s.gatherers, gatherer)
 }
 
@@ -261,8 +261,8 @@ func (s *SVC) recoverWait(name string, wg *sync.WaitGroup, errors chan<- error) 
 }
 
 func (s *SVC) metricsHandler(w http.ResponseWriter, r *http.Request) {
-	if s.promHander == nil {
-		s.promHander = promhttp.HandlerFor(s.gatherers, promhttp.HandlerOpts{})
+	if s.promHandler == nil {
+		s.promHandler = promhttp.HandlerFor(s.gatherers, promhttp.HandlerOpts{})
 	}
-	s.promHander.ServeHTTP(w, r)
+	s.promHandler.ServeHTTP(w, r)
 }
