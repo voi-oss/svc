@@ -84,6 +84,11 @@ func New(name, version string, opts ...Option) (*SVC, error) {
 		}
 	}
 
+	// Validate some options
+	if s.TerminationWaitPeriod > 0 && s.TerminationGracePeriod <= s.TerminationWaitPeriod {
+		s.logger.Warn("termination grace period should be greater than termination wait period")
+	}
+
 	return s, nil
 }
 
